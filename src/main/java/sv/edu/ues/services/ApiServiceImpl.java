@@ -2,8 +2,10 @@ package sv.edu.ues.services;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import sv.edu.ues.domain.User;
 import sv.edu.ues.domain.UserData;
@@ -12,17 +14,39 @@ import sv.edu.ues.domain.UserData;
 public class ApiServiceImpl implements ApiService {
 
 	private RestTemplate template;
+	private String apiUrl;
 
-	public ApiServiceImpl(RestTemplate template) {
+	public ApiServiceImpl(RestTemplate template, @Value("${api.url}") String apiUrl) {
 		super();
 		this.template = template;
+		this.apiUrl = apiUrl;
 	}
 
 	@Override
 	public List<User> getData(Integer limit) {
+		
+		UriComponentsBuilder builder = UriComponentsBuilder
+				.fromUriString(apiUrl)
+				.queryParam("limit", limit);
+		
 		UserData userData = template.getForObject(
-				"http://private-anon-063072cc66-apifaketory.apiary-mock.com/api/user?limit="+limit, UserData.class);
+				builder.toUriString(), UserData.class);
 		return userData.getData();
 	}
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
