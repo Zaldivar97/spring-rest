@@ -11,15 +11,17 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.web.client.HttpClientErrorException.NotFound;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import reactor.core.publisher.Flux;
 import sv.edu.ues.domain.User;
 
 //@ExtendWith(SpringExtension.class)
-//@SpringBootTest
+@SpringBootTest
 class ApiServiceImplTest {
 	
 	final static String URL_BASE_SWAGGER = "https://api.predic8.de:443/shop";
@@ -115,6 +117,13 @@ class ApiServiceImplTest {
 	final void test() {
 		List<User> list = apiService.getData(1);
 		assertEquals(1, list.size());
+	}
+	
+	@Test
+	final void testReactive() {
+		Flux<User> data = apiService.getDataReactive(1);
+		data.collectList().subscribe(
+				list -> assertEquals(1, list.size()));
 	}
 
 }
